@@ -1,0 +1,42 @@
+<!--Use cases:
+    ToDo anlegen
+    ToDo ändern
+    ToDo löschen
+    ToDo einsehen
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo</title>
+    <script src="todo.js" defer></script>
+</head>
+
+<body>
+    <form action="https://ominous-giggle-x5vjp5q746r4cv656-3000.app.github.dev/todos/" method="post" class="createtodo">
+        <h1>ToDo</h1>
+        <label for="title">Titel</label>
+        <input name="title" id="title" type="text" required>
+        <label for="due">Fälligkeitsdatum</label>
+        <input name="due" id="due" type="date">
+        <label for="location">Ort</label>
+        <input name="location" id="location" type="text">
+        <label for="status">Status</label>
+        <select name="status" id="status">
+            <option value="needs-action">Zu tun</option>
+            <option value="completed">Erledigt</option>
+            <option value="in-process">In bearbeitung</option>
+            <option value="cancelled">Anulliert</option>
+        </select>
+        <input type="submit" value="Erstellen">
+    </form>
+    <div id="todoarea">
+
+    </div>
+</body>
+
+</html>

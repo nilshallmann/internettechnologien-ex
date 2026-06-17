@@ -1,0 +1,23 @@
+info:
+  name: NEW
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://ominous-giggle-x5vjp5q746r4cv656-3000.app.github.dev/todos
+  body:
+    type: json
+    data: |2-
+       {
+              "title": "Übung 5 machen",
+              "due": "2022-11-12T00:00:00.000Z",
+              "status": "bing-chilling"
+          }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

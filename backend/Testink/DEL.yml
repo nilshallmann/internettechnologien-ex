@@ -1,0 +1,14 @@
+info:
+  name: DEL
+  type: http
+
+http:
+  method: DELETE
+  url: https://ominous-giggle-x5vjp5q746r4cv656-3000.app.github.dev/todos/1671056616571
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
