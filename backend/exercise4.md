@@ -200,6 +200,7 @@ jwtFromRequest: (req) => {
             token = req.cookies.token
         }
     }
+    return token
 ```
 
 ### Aufgabe 1.2: Erweiterung des Datenmodells
