@@ -1,9 +1,41 @@
 const url = "https://ominous-giggle-x5vjp5q746r4cv656-3000.app.github.dev/todos"
+const LOGIN_URL = "https://keycloak.gawron.cloud/realms/webentwicklung/protocol/openid-connect/auth"
 const TODOS = []
+
+/** Check whether we need to login.
+ * Check the status of a response object. If the status is 401, construct an appropriate 
+ * login URL and redirect there.
+ * 
+ * @param response Response object to check
+ * @returns original response object if status is not 401
+ */
+function checkLogin(response) {
+    // check if we need to login
+    if (response.status == 401) {
+        console.log("Request returned 401, need to log in")
+        let state = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith("state="))
+            ?.split("=")[1]
+        console.log("state: %s", state)
+        let params = new URLSearchParams()
+        params.append("response_type", "code")
+        params.append("redirect_uri", new URL("/oauth_callback", window.location))
+        params.append("client_id", "todo-backend")
+        params.append("scope", "openid")
+        params.append("state", state)
+
+        // redirect to login URL with proper parameters
+        window.location = LOGIN_URL + "?" + params.toString()
+        throw new Error("Need to log in")
+    }
+    else return response
+}
 
 async function fetchTodos() {
     try {
-        const response = await fetch(url);
+        const response = await fetch(url)
+            .then(checkLogin);
         if (!response.ok) {
             throw new Error(`no bing chilling: ${response.status}`);
         }
@@ -24,7 +56,9 @@ function deleteTodo(id) {
     const index = TODOS.findIndex(todo => todo._id === id)
     if (index !== -1) {
         console.log(id);
-        fetch(`${url}/${id}`, { method: "DELETE" });
+        fetch(`${url}/${id}`, { method: "DELETE" })
+            .then(checkLogin)
+            .catch(error => console.error(error));
         TODOS.splice(index, 1);
     }
 
@@ -50,7 +84,9 @@ function editTodo(id) {
                     body: JSON.stringify(TODOS[index]),
                     headers: { "Content-Type": "application/json" }
                 }
-            );
+            )
+            .then(checkLogin)
+            .catch(error => console.error(error));
             render();
         }
     }

@@ -15,29 +15,31 @@ export default class DB {
             })
     }
 
-    queryAll() {
-        return collection.find().toArray();
+    queryAll(userId) {
+        return collection.find({ userId }).toArray();
     }
 
-    queryById(id) {
-        return collection.findOne({_id: new ObjectId(id)});
+    queryById(id, userId) {
+        return collection.findOne({_id: new ObjectId(id), userId});
     }
 
-    update(id, todo) {
+    update(id, todo, userId) {
         // das id feld im todo ist noch ein string. Das darf natürlich nicht sein.
         //delete todo._id;
         todo._id = new ObjectId(todo._id);
-        return collection.findOneAndReplace({_id: new ObjectId(id)}, todo);
+        todo.userId = userId;
+        return collection.findOneAndReplace({_id: new ObjectId(id), userId}, todo);
     }
 
-    delete(id) {
-        const todo = collection.findOne({_id: new ObjectId(id)});
-        collection.deleteOne(todo);
+    delete(id, userId) {
+        const todo = collection.findOne({_id: new ObjectId(id), userId});
+        collection.deleteOne({_id: new ObjectId(id), userId});
         return todo;
         //return collection.findOneAndDelete({_id: new ObjectId(id)});
     }
 
-    insert(todo) {
+    insert(todo, userId) {
+        todo.userId = userId;
         return collection.insertOne(todo)
         .then(result => {
             todo._id = new ObjectId(result.insertedId);
