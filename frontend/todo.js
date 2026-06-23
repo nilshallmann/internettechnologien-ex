@@ -52,6 +52,42 @@ async function fetchTodos() {
     }
 }
 
+async function createTodo() {
+    const title = document.getElementById('title').value;
+    const due = document.getElementById('due').value;
+    const location = document.getElementById('location').value;
+    const status = document.getElementById('status').value;
+
+    const todo = { title, due, location, status };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(todo)
+        });
+
+        checkLogin(response);
+
+        if (!response.ok) {
+            throw new Error(`Failed to create todo: ${response.status}`);
+        }
+
+        const createdTodo = await response.json();
+        TODOS.push(createdTodo);
+        render();
+        document.getElementById('createTodoForm').reset();
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+const createTodoForm = document.getElementById('createTodoForm');
+createTodoForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    await createTodo();
+});
+
 function deleteTodo(id) {
     const index = TODOS.findIndex(todo => todo._id === id)
     if (index !== -1) {
