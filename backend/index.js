@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import { check, param, validationResult } from 'express-validator';
 
 import DB from "./db.js";
 
@@ -34,6 +35,50 @@ const jwtFromRequest = (req) => {
     }
     return token;
 };
+
+const todoValidationRules = [
+    check('title')
+        .isString()
+        .notEmpty()
+        .withMessage('Titel darf nicht leer sein')
+        .isLength({ min: 3 })
+        .withMessage('Titel muss mindestens 3 Zeichen lang sein'),
+
+    check('due')
+        .optional({ checkFalsy: true })
+        .isISO8601()
+        .withMessage('Ungültiges Datum'),
+
+    check('location')
+        .optional()
+        .isString(),
+
+    check('status')
+        .isIn([
+            'needs-action',
+            'completed',
+            'in-process',
+            'cancelled'
+        ])
+        .withMessage('Ungültiger Status'),
+
+    check('id')
+        .optional()
+        .custom((value, { req }) => {
+            if (value !== req.params.id) {
+                throw new Error('ID in URL and body must match');
+            }
+        })
+];
+
+const deleteValidationRules = [
+    param('id')
+        .notEmpty()
+        .withMessage('ID erforderlich')
+        // Optional: Prüfen ob es ein gültiges MongoDB ObjectId-Format ist
+        .isMongoId()
+        .withMessage('Ungültige ID')
+];
 
 passport.use(new JwtStrategy({
     jwtFromRequest,
@@ -105,12 +150,24 @@ app.get('/todos', auth, async (req, res) => {
     res.json(await db.queryAll(userId));
 });
 
-app.post('/todos', auth, async (req, res) => {
+app.post('/todos', todoValidationRules, auth, async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+    
     const userId = req.user.sub;
     res.status(201).json(await db.insert(req.body, userId));
 })
 
-app.get('/todos/:id', auth, async(req, res) => {
+app.get('/todos/:id', todoValidationRules, auth, async(req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
     const id = req.params.id;
     const userId = req.user.sub;
     const todo = await db.queryById(id, userId);
@@ -121,7 +178,13 @@ app.get('/todos/:id', auth, async(req, res) => {
     }
 })
 
-app.delete('/todos/:id', auth, async (req, res) => {
+app.delete('/todos/:id', deleteValidationRules, auth, async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
     const id = req.params.id;
     const userId = req.user.sub;
     if (id) {
@@ -136,7 +199,13 @@ app.delete('/todos/:id', auth, async (req, res) => {
     }
 })
 
-app.put('/todos/:id', auth, async (req, res) => {
+app.put('/todos/:id', todoValidationRules, auth, async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
     const id = req.params.id;
     const userId = req.user.sub;
     if (id) {
