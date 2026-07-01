@@ -4,7 +4,57 @@ import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { check, param, validationResult } from 'express-validator';
 
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
+
 import DB from "./db.js";
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Todo API',
+      version: '1.0.0',
+      description: 'Todo API Dokumentation',
+    },
+    servers: [
+      {
+        url: `https://${process.env.CODESPACE_NAME}-3000.app.github.dev/`,
+      },
+    ],
+      components: {
+    schemas: {
+      Todo: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+          },
+          due: {
+            type: 'string',
+          },
+          status: {
+            type: 'integer',
+          },
+        },
+      },
+    },
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }
+    },
+  },
+  security: [{
+    bearerAuth: []
+  }]
+  },
+  apis: ['./index.js'], 
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy8yBKM7qsdM/NhsUpjPPw
@@ -62,13 +112,12 @@ const todoValidationRules = [
         ])
         .withMessage('Ungültiger Status'),
 
-    check('id')
+    check('_id')
         .optional()
         .custom((value, { req }) => {
-            if (value !== req.params.id) {
-                throw new Error('ID in URL and body must match');
-            }
+            return (value == req.params.id);
         })
+        .withMessage('ID in URL and body must match')
 ];
 
 const deleteValidationRules = [
@@ -102,6 +151,8 @@ const buildRedirectUri = () => {
     }
     return `https://${codespaceName}-3000.app.github.dev/oauth_callback`;
 };
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get('/oauth_callback', async (req, res) => {
     const code = req.query.code;
@@ -145,11 +196,50 @@ app.get('/oauth_callback', async (req, res) => {
     res.redirect('/');
 });
 
+
+/**
+ * @swagger
+ * /todos:
+ *  get:
+ *    summary: Gibt alle Todos zurück
+ *    tags: [Todos]
+ *    responses:
+ *      '200':
+ *        description: Eine Liste aller Todos
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Todo'
+ */
 app.get('/todos', auth, async (req, res) => {
     const userId = req.user.sub;
     res.json(await db.queryAll(userId));
 });
 
+/**
+ * @swagger
+ * /todos:
+ *   post:
+ *     summary: Erstellt ein neues Todo
+ *     tags: [Todos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/Todo"
+ *     responses:
+ *       "201":
+ *         description: Erstelltes Todo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Todo"
+ *       "422":
+ *         description: Fehlerhafter Inhalt.
+ */
 app.post('/todos', todoValidationRules, auth, async (req, res) => {
     const errors = validationResult(req);
     
@@ -161,7 +251,30 @@ app.post('/todos', todoValidationRules, auth, async (req, res) => {
     res.status(201).json(await db.insert(req.body, userId));
 })
 
-app.get('/todos/:id', todoValidationRules, auth, async(req, res) => {
+/**
+ * @swagger
+ * "/todos/{id}":
+ *   get:
+ *     summary: Fragt bestimmtes Todo anhand ID an
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Die ID des Todos
+ *     responses:
+ *       "200":
+ *         description: Angefragtes Todo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Todo"
+ *       "404":
+ *         description: Todo existiert nicht.
+ */
+app.get('/todos/:id', auth, async(req, res) => {
     const errors = validationResult(req);
     
     if (!errors.isEmpty()) {
@@ -178,6 +291,25 @@ app.get('/todos/:id', todoValidationRules, auth, async(req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * "/todos/{id}":
+ *   delete:
+ *     summary: Löscht ein Todo
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Die ID des Todos
+ *     responses:
+ *       "204":
+ *         description: Todo gelöscht.
+ *       "404":
+ *         description: Todo existiert nicht.
+ */
 app.delete('/todos/:id', deleteValidationRules, auth, async (req, res) => {
     const errors = validationResult(req);
     
@@ -199,6 +331,37 @@ app.delete('/todos/:id', deleteValidationRules, auth, async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * "/todos/{id}":
+ *   put:
+ *     summary: Aktualisiert ein Todo
+ *     tags: [Todos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/Todo"
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Die ID des Todos
+ *     responses:
+ *       "201":
+ *         description: Erstelltes Todo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Todo"
+ *       "422":
+ *         description: Fehlerhafter Inhalt.
+ *       "404":
+ *         description: Todo existiert nicht.
+ */
 app.put('/todos/:id', todoValidationRules, auth, async (req, res) => {
     const errors = validationResult(req);
     
@@ -210,8 +373,8 @@ app.put('/todos/:id', todoValidationRules, auth, async (req, res) => {
     const userId = req.user.sub;
     if (id) {
         const result = await db.update(id, req.body, userId);
-        if (result.value) {
-            res.status(201).json(result.value);
+        if (result) {
+            res.status(201).json(result);
         } else {
             res.status(403).send();
         }
