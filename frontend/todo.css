@@ -1,0 +1,519 @@
+/* ====================================
+   DARK MODE TODO APP - CSS STYLING
+   ==================================== */
+
+/* ========== CSS VARIABLEN ==========*/
+:root {
+  /* Hintergrundfarben */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  
+  /* Textfarben */
+  --text-primary: #e0e0e0;
+  --text-heading: #ffffff;
+  
+  /* Border & Accents */
+  --border: #444444;
+  --accent: #4a9eff;
+  --accent-hover: #2d7acc;
+  
+  /* Status-Farben */
+  --status-action: #ff6b6b;
+  --status-process: #4a9eff;
+  --status-done: #51cf66;
+  --status-cancel: #868e96;
+  
+  /* Abstände */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Sonstige */
+  --transition: 0.2s ease;
+  --border-radius: 4px;
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ========== GLOBAL RESET & BODY ==========*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ========== TYPOGRAFIE ==========*/
+h1 {
+  color: var(--text-heading);
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+h2 {
+  color: var(--text-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+}
+
+label {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+label:first-of-type {
+  margin-top: 0;
+}
+
+/* ========== FORM STYLING ==========*/
+.createtodo {
+  background-color: var(--bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  margin-bottom: var(--spacing-lg);
+  
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ========== INPUT FELDER & SELECT ==========*/
+input[type="text"],
+input[type="date"],
+input[type="datetime-local"],
+select {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all var(--transition);
+  
+  cursor: text;
+}
+
+input[type="text"]::placeholder,
+input[type="date"]::placeholder {
+  color: #888888;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+  background-color: var(--bg-secondary);
+}
+
+input[type="text"]:disabled,
+input[type="date"]:disabled,
+input[type="datetime-local"]:disabled,
+select:disabled {
+  background-color: transparent;
+  border: none;
+  cursor: default;
+  opacity: 0.8;
+  padding: var(--spacing-sm) 0;
+}
+
+/* Select Pfeil Farbe */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0e0e0' d='M0 3l6 6 6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-md) center;
+  padding-right: var(--spacing-xl);
+}
+
+select:disabled {
+  background-image: none;
+  padding-right: 0;
+}
+
+/* ========== BUTTON STYLING ==========*/
+input[type="submit"],
+.createtodo button,
+button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-light);
+  
+  margin-top: var(--spacing-md);
+  width: 100%;
+}
+
+input[type="submit"]:hover,
+button:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+input[type="submit"]:active,
+button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-light);
+}
+
+/* Buttons in ToDos sollen inline sein */
+.todo button {
+  width: auto;
+  margin: 0 var(--spacing-sm) 0 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+}
+
+.todo button:last-child {
+  margin-right: 0;
+}
+
+/* ========== TODOAREA CONTAINER ==========*/
+#todoarea {
+  max-width: 800px;
+  margin: var(--spacing-lg) auto;
+}
+
+/* ========== TODO ELEMENT STYLING ==========*/
+.todo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  
+  background-color: var(--bg-secondary);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  
+  border-left: 4px solid var(--border);
+  transition: all var(--transition);
+}
+
+.todo:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+/* Status-Farben für die ToDo Linke Border */
+.todo.needs-action {
+  border-left-color: var(--status-action);
+}
+
+.todo.in-process {
+  border-left-color: var(--status-process);
+}
+
+.todo.completed {
+  border-left-color: var(--status-done);
+}
+
+.todo.cancelled {
+  border-left-color: var(--status-cancel);
+}
+
+/* ========== TODO TITLE ==========*/
+.todo .title {
+  grid-column: 1 / -1;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.todo .title:disabled {
+  color: var(--text-heading);
+}
+
+/* ========== FIELD WRAPPER ==========*/
+.todo .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo .field-full {
+  grid-column: 1 / -1;
+}
+
+.todo .field label {
+  margin-bottom: var(--spacing-sm);
+  margin-top: 0;
+  font-size: 0.85rem;
+  color: #b0b0b0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== TODO INPUT FELDER & SELECT ==========*/
+.todo input[type="text"],
+.todo input[type="datetime-local"],
+.todo select,
+.todo textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all var(--transition);
+  
+  cursor: text;
+}
+
+.todo input[type="text"]::placeholder,
+.todo input[type="datetime-local"]::placeholder,
+.todo textarea::placeholder {
+  color: #888888;
+}
+
+.todo input[type="text"]:focus,
+.todo input[type="datetime-local"]:focus,
+.todo select:focus,
+.todo textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+  background-color: var(--bg-secondary);
+}
+
+.todo input[type="text"]:disabled,
+.todo input[type="datetime-local"]:disabled,
+.todo select:disabled,
+.todo textarea:disabled {
+  background-color: transparent;
+  border: none;
+  cursor: default;
+  opacity: 0.8;
+  padding: var(--spacing-sm) 0;
+}
+
+/* Status-Select styling */
+.todo .status {
+  text-transform: capitalize;
+}
+
+.todo .status option {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Textarea spezielles Styling */
+.todo textarea {
+  resize: none;
+  min-height: 60px;
+  max-height: 400px;
+  overflow: hidden;
+}
+
+.todo textarea:disabled {
+  resize: none;
+}
+
+/* Select Pfeil Farbe */
+.todo select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0e0e0' d='M0 3l6 6 6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-md) center;
+  padding-right: var(--spacing-xl);
+}
+
+.todo select:disabled {
+  background-image: none;
+  padding-right: 0;
+}
+
+/* ========== TODO BUTTONS ==========*/
+.todo button {
+  flex: 0 0 auto;
+}
+
+.todo > button:nth-last-child(-n+2) {
+  grid-column: auto;
+  width: auto;
+  display: inline-block;
+  margin-top: var(--spacing-md);
+  margin-right: var(--spacing-md);
+}
+
+.todo > button:last-child {
+  margin-right: 0;
+}
+
+/* ========== RESPONSIVE DESIGN ==========*/
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+  
+  .createtodo {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+    margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+  }
+  
+  .todo {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+  
+  .todo .title {
+    grid-column: 1;
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+  
+  .todo .field {
+    width: 100%;
+  }
+  
+  .todo input[type="text"],
+  .todo input[type="datetime-local"],
+  .todo select,
+  .todo textarea {
+    width: 100%;
+  }
+  
+  .todo button {
+    width: 100%;
+    margin: var(--spacing-sm) 0 0 0;
+    padding: var(--spacing-md);
+    font-size: 1rem;
+  }
+  
+  .todo > button:nth-last-child(-n+2) {
+    grid-column: 1;
+    width: 100%;
+    display: block;
+    margin: var(--spacing-sm) 0 0 0;
+  }
+  
+  .todo > button:last-child {
+    margin-right: 0;
+  }
+  
+  input[type="submit"],
+  .createtodo button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 13px;
+  }
+  
+  .createtodo {
+    padding: var(--spacing-md);
+  }
+  
+  #todoarea {
+    margin: var(--spacing-md) auto;
+  }
+  
+  .todo {
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .todo textarea {
+    min-height: 80px;
+    max-height: 200px;
+  }
+}
+
+/* ========== ACCESSIBILITY ==========*/
+/* Focus-Indicator für Tastaturnavigation */
+input:focus,
+select:focus,
+button:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Entferne standardmäßige Focus-Visuals für Mouse-User */
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ========== SCROLLBAR STYLING (Optional - für Chrome/Firefox) ==========*/
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-color: var(--border) var(--bg-primary);
+  scrollbar-width: thin;
+}
+
+/* ========== PRINT MEDIA ==========*/
+@media print {
+  .createtodo,
+  .todo button {
+    display: none;
+  }
+  
+  .todo {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
+}

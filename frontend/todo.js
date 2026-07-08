@@ -57,8 +57,9 @@ async function createTodo() {
     const due = document.getElementById('due').value;
     const location = document.getElementById('location').value;
     const status = document.getElementById('status').value;
+    const description = document.getElementById('description').value;
 
-    const todo = { title, due, location, status };
+    const todo = { title, due, location, status, description };
 
     try {
         const response = await fetch(url, {
@@ -104,15 +105,20 @@ function deleteTodo(id) {
 function editTodo(id) {
     const index = TODOS.findIndex(todo => todo._id === id)
     if (index !== -1) {
-        const title = todoarea.querySelector(`h3[id="h3-${id}"]`);
+        const title = todoarea.querySelector(`.title[id="h3-${id}"]`); //(`h3[id="h3-${id}"]`);
         const status = todoarea.querySelector(`.status[id="st-${id}"]`);
         const duedate = todoarea.querySelector(`.duedate[id="dd-${id}"]`);
+        const location = todoarea.querySelector(`.location[id="loc-${id}"]`);
+        const description = todoarea.querySelector(`.description[id="desc-${id}"]`);
 
+        title.disabled = !title.disabled;
         status.disabled = !status.disabled;
         duedate.disabled = !duedate.disabled;
+        location.disabled = !location.disabled;
+        description.disabled = !description.disabled;
 
-        if (status.disabled) {
-            TODOS[index] = { _id: id, title: title.textContent, due: duedate.value, status: status.value };
+        if (status.disabled) {                      //textContent
+            TODOS[index] = { _id: id, title: title.value, due: duedate.value, status: status.value, location: location.value, description: description.value };
             fetch(
                 `${url}/${id}`,
                 {
@@ -144,20 +150,26 @@ function render() {
         `);*/
 
         const div = document.createElement("div");
-        const title = document.createElement("h3");
+        const title = document.createElement("input");
         const duedate = document.createElement("input");
+        const location = document.createElement("input");
+        const description = document.createElement("textarea");
         const status = document.createElement("select");
 
         div.id = `data-id=${todo._id}`;
-        div.className = "todo";
+        div.className = `todo ${todo.status}`;
         div.value = `data-status="${todo.status}"`
 
+        //title.id = `h3-${todo._id}`;
+        //title.textContent = todo.title;
+        title.value = todo.title;
+        title.className = "title";
         title.id = `h3-${todo._id}`;
-        title.textContent = todo.title;
+        title.disabled = true;
 
         duedate.type = "datetime-local";
         // todo: rework this date stuff
-        duedate.value = todo.due.slice(0, 16);
+        duedate.value = todo.due?.slice(0, 16);
         duedate.className = "duedate";
         duedate.id = `dd-${todo._id}`;
         duedate.disabled = true;
@@ -178,10 +190,67 @@ function render() {
         status.id = `st-${todo._id}`;
         status.disabled = true;
 
+        location.value = todo.location;
+        location.className = "location";
+        location.id = `loc-${todo._id}`;
+        location.disabled = true;
+
+        description.value = todo.description;
+        description.className = "description";
+        description.id = `desc-${todo._id}`;
+        description.disabled = true;
+        
+        // Auto-resize textarea on input
+        description.addEventListener('input', function() {
+          this.style.height = 'auto';
+          this.style.height = Math.min(this.scrollHeight, 400) + 'px';
+        });
+        // Initial resize
+        description.style.height = 'auto';
+        description.style.height = Math.min(description.scrollHeight, 400) + 'px';
+
         const appendable = div; //todoarea.querySelector(`[data-id="${todo.id}"]`);
         appendable.appendChild(title);
-        appendable.appendChild(status);
-        appendable.appendChild(duedate);
+        
+        // Status Field mit Label
+        const statusField = document.createElement("div");
+        statusField.className = "field";
+        const statusLabel = document.createElement("label");
+        statusLabel.htmlFor = `st-${todo._id}`;
+        statusLabel.textContent = "Status";
+        statusField.appendChild(statusLabel);
+        statusField.appendChild(status);
+        appendable.appendChild(statusField);
+        
+        // Due Date Field mit Label
+        const dueDateField = document.createElement("div");
+        dueDateField.className = "field";
+        const dueDateLabel = document.createElement("label");
+        dueDateLabel.htmlFor = `dd-${todo._id}`;
+        dueDateLabel.textContent = "Fälligkeitsdatum";
+        dueDateField.appendChild(dueDateLabel);
+        dueDateField.appendChild(duedate);
+        appendable.appendChild(dueDateField);
+        
+        // Location Field mit Label
+        const locationField = document.createElement("div");
+        locationField.className = "field";
+        const locationLabel = document.createElement("label");
+        locationLabel.htmlFor = `loc-${todo._id}`;
+        locationLabel.textContent = "Ort";
+        locationField.appendChild(locationLabel);
+        locationField.appendChild(location);
+        appendable.appendChild(locationField);
+        
+        // Description Field mit Label
+        const descriptionField = document.createElement("div");
+        descriptionField.className = "field field-full";
+        const descriptionLabel = document.createElement("label");
+        descriptionLabel.htmlFor = `desc-${todo._id}`;
+        descriptionLabel.textContent = "Beschreibung";
+        descriptionField.appendChild(descriptionLabel);
+        descriptionField.appendChild(description);
+        appendable.appendChild(descriptionField);
 
 
         const todoElement = appendable;//todoarea.querySelector(`[data-id="${todo.id}"]`);
