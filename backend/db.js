@@ -6,13 +6,19 @@ const MONGO_DB = process.env.MONGO_DB || 'todos';
 
 let db = null;
 let collection = null;
+let client = null;
 export default class DB {
     connect() {
         return MongoClient.connect(MONGO_URI)
-            .then(function (client) {
+            .then(function (c) {
+                client = c;
                 db = client.db(MONGO_DB);
                 collection = db.collection('todos');
             })
+    }
+
+    close() {
+        return client.close()
     }
 
     queryAll(userId) {

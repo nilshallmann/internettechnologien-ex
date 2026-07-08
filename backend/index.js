@@ -382,4 +382,6 @@ app.put('/todos/:id', todoValidationRules, auth, async (req, res) => {
         res.status(404).send();
     }})
 
-app.listen(3000);
+const server = app.listen(3000);
+
+export {app, db, server};
