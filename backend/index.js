@@ -322,7 +322,7 @@ app.delete('/todos/:id', deleteValidationRules, auth, async (req, res) => {
     if (id) {
         const result = await db.delete(id, userId);
         if (result) {
-            res.status(201).json(result);
+            res.status(204).json(result);
         } else {
             res.status(403).send();
         }

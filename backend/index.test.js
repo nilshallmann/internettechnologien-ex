@@ -53,7 +53,7 @@ describe('DELETE /todos/:id', () => {
         const deleteResponse = await request(app)
             .delete(`/todos/${todoId}`)
             .auth(token, {type: 'bearer'});
-        expect(deleteResponse.statusCode).toBe(201);
+        expect(deleteResponse.statusCode).toBe(204);
 
         // Verify that the todo is deleted
         const getResponse = await request(app)

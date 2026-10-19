@@ -167,9 +167,9 @@ function render() {
         title.id = `h3-${todo._id}`;
         title.disabled = true;
 
-        duedate.type = "datetime-local";
+        duedate.type = "date";
         // todo: rework this date stuff
-        duedate.value = todo.due?.slice(0, 16);
+        duedate.value = todo.due; //todo.due?.slice(0, 16);
         duedate.className = "duedate";
         duedate.id = `dd-${todo._id}`;
         duedate.disabled = true;
@@ -203,11 +203,11 @@ function render() {
         // Auto-resize textarea on input
         description.addEventListener('input', function() {
           this.style.height = 'auto';
-          this.style.height = Math.min(this.scrollHeight, 400) + 'px';
+          this.style.height = Math.min(this.scrollHeight, 600) + 'px';
         });
         // Initial resize
         description.style.height = 'auto';
-        description.style.height = Math.min(description.scrollHeight, 400) + 'px';
+        description.style.height = Math.min(description.scrollHeight, 600) + 'px';
 
         const appendable = div; //todoarea.querySelector(`[data-id="${todo.id}"]`);
         appendable.appendChild(title);
